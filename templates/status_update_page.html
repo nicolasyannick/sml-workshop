@@ -1,0 +1,60 @@
+{% extends 'main.html' %}
+{% block content %}
+
+<!-- Filters Section -->
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header">
+            <h4>Task Filters</h4>
+        </div>
+        <div class="card-body">
+            <form action="" method="GET">
+                {{ task_filter_form.as_p }}
+                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                <a href="{% url 'status_update_page' %}" class="btn btn-secondary">Reset Filters</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Task List Section -->
+<div class="container">
+    <div class="card mt-5 shadow">
+        <div class="card-header">
+            <h4>Available Tasks for Today</h4>
+        </div>
+        <div class="card-body">
+            <table class="table-responsive table mt-2" role="grid">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Urgency</th>
+                        <th>Unit</th>
+                        <th>Dept.</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for task in filtered_tasks %}
+                    <tr>
+                        <td>{{ task.description }}</td>
+                        <td>{{ task.get_urgency_display }}</td>
+                        <td>{{ task.work_request.get_unit_display }}</td>
+                        <td>{{ task.work_request.get_department_display }}</td>
+                        <td>{{ task.get_current_status_display }}</td>
+                        <td>
+                            <a href="{% url 'status_update' task.id %}" target="_blank" class="
+                            btn btn-primary">Update Status</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock content %}

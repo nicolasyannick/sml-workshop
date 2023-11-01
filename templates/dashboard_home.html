@@ -1,0 +1,107 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<!-- Section 1 :  Operational Metrics Cards-->
+
+<div class="container mt-4">
+    <div class="d-flex">
+        <h3>Operational Metrics - Active Tasks</h3>
+    </div>
+    <div class="row mt-3 mb-3">
+        <div class="col-sm-6 col-md-3">
+            <div class="card shadow bg-white" style="border-left: 4px solid #FFE169;">
+                <div class="card-body">
+                    <div class="text-uppercase text-xs text-muted mb-1" style="font-size: .9rem;">
+                        <p>Total Requests</p>
+                    </div>
+                    <div class="text-dark fw-bold h5 text-end pe-3">
+                        <h2>{{active_work_requests_count}}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="card shadow bg-white" style="border-left: 4px solid #edc531;">
+                <div class="card-body">
+                    <div class="text-uppercase text-xs text-muted mb-1" style="font-size: .9rem;">
+                        <p>Total Tasks</p>
+                    </div>
+                    <div class="text-dark fw-bold h5 text-end pe-3">
+                        <h2>{{active_tasks_count}}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="card shadow bg-white" style="border-left: 4px solid #c9a227;">
+                <div class="card-body">
+                    <div class="text-uppercase text-xs text-muted mb-1" style="font-size: .9rem;">
+                        <p>Machining Tasks</p>
+                    </div>
+                    <div class="text-dark fw-bold h5 text-end pe-3">
+                        <h2>{{active_machining_tasks_count}}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="card shadow bg-white" style="border-left: 4px solid #a47e1b;">
+                <div class="card-body">
+                    <div class="text-uppercase text-xs text-muted mb-1" style="font-size: .9rem;">
+                        <p>Non-Machining Tasks</p>
+                    </div>
+                    <div class="text-dark fw-bold h5 text-end pe-3">
+                        <h2>{{active_non_machining_tasks_count}}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Section 2: Dashboard Graphs -->
+
+<div class="container mt-5">
+    <div class="container shadow bg-white">
+        <div class="row">
+            <!-- Lead Time Heatmap -->
+            <div class="col-sm-12 col-md-6 text-muted text-center mb-5 h-100">
+                {{plot4|safe}}
+            </div>
+            <div class="col-sm-12 col-md-6 text-muted text-center mb-5 h-100">
+                {{plot1|safe}}
+            </div>
+            <div class="col-sm-12 col-md-6 text-muted text-center mt-2 h-100">
+                {{plot2|safe}}
+            </div>
+            <div class="col-sm-12 col-md-6 text-muted text-center mt-2 h-100">
+                {{plot3|safe}}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Section 3: Todays Planning -->
+
+<div class="container mt-5">
+    <div class="d-flex py-3">
+        <h3>Today's Planning</h3>
+    </div>
+    <di class="container bg-white shadow">
+
+    </div>
+</div>
+
+    
+
+        
+
+
+
+
+
+
+
+
+{% endblock content %}

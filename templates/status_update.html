@@ -1,0 +1,206 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<!-- Section 1 :  Work Request and Task Info -->
+
+<div class="container mt-5">
+    <div class="row">
+
+        <div class="col-6">
+            <!-- Work Request Info Card -->
+            <div class="card shadow py-2">
+                <div class="card-header bg-white">
+                    <h5>Work Request Details</h5>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <!-- Work Request ID -->
+                        <div class="d-flex justify-content-between">
+                            <label for="workRequestId" class="form-label col-4">Work Request ID:</label>
+                            <input type="text" class="form-control" value="{{ work_request.id }}" readonly>
+                        </div>
+                        <!-- Date -->
+                        <div class="d-flex justify-content-between mt-3">
+                            <label for="date" class="form-label col-4">Date:</label>
+                            <input type="text" class="form-control" value="{{ work_request.date }}" readonly>
+                        </div>
+                        <!-- Unit -->
+                        <div class="d-flex justify-content-between mt-3">
+                            <label for="unit" class="form-label col-4">Unit:</label>
+                            <input type="text" class="form-control" value="{{ work_request.get_unit_display }}" readonly>
+                        </div>
+                        <!-- Department -->
+                        <div class="d-flex justify-content-between mt-3">
+                            <label for="department" class="form-label col-4">Department:</label>
+                            <input type="text" class="form-control" value="{{ work_request.get_department_display }}" readonly>
+                        </div>
+                        <!-- Requester -->
+                        <div class="d-flex justify-content-between mt-3">
+                            <label for="requester" class="form-label col-4">Requester:</label>
+                            <input type="text" class="form-control" value="{{ work_request.requester }}" readonly>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 ml-3">
+            <!-- Task Info Card -->
+            <div class="card shadow py-2">
+                <div class="card-header bg-white">
+                    <h5>Task Details</h5>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <!-- Description -->
+                        <div class="form-group justify-content-between">
+                            <label for="description" class="form-label">Description:</label>
+                            <textarea class="form-control" rows="2" readonly>{{ task.description }}</textarea>
+                        </div>
+                        <!-- Urgency -->
+                        <div class="d-flex justify-content-between mt-3">
+                            <label for="urgency" class="form-label col-4">Urgency:</label>
+                            <input type="text" class="form-control" value="{{ task.get_urgency_display }}" readonly>
+                        </div>
+                        <!-- Quantity -->
+                        <div class="d-flex justify-content-between mt-3">
+                            <label for="quantity" class="form-label col-4">Quantity:</label>
+                            <input type="text" class="form-control" value="{{ task.quantity }}" readonly>
+                        </div>
+                        <!-- Machining -->
+                        <div class="d-flex mt-3">
+                            <label for="machining" class="form-label col-4">Machining</label>
+                            <input type="checkbox" class="form-check-input" {% if task.machining %} checked {% endif %} readonly disabled>
+                        </div>
+                        <!-- Assessment Time -->
+                        <div class="d-flex justify-content-between mt-3">
+                            <label for="quantity" class="form-label col-4">Assessment Time:</label>
+                            <input type="text" class="form-control" value="{{ task.assessment_time }}" readonly>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+<!-- Section 2 : Status History -->
+<div class="container mt-5">
+    <div class="card shadow py-2">
+        <div class="card-header bg-white">
+            <h5>Status History</h5>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Normal Duration</th>
+                        <th>Overtime Duration</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for status in status_history %}
+                    <tr>
+                        <td>{{ status.get_state_display }}</td>
+                        <td>{{ status.start_time }}</td>
+                        <td>{{ status.end_time }}</td>
+                        <td>{{ status.normal_duration }}</td>
+                        <td>{{ status.overtime_duration }}</td>
+                        <td>
+                            <!-- End Time Button for only "In Progress" without end_time -->
+                            {% if status.state == 5 and status.end_time == None %}
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateEndTimeModal-{{status.id}}">
+                                End Time
+                            </button>
+
+
+                            <!-- End Time Modal -->
+                            <div class="modal fade" id="updateEndTimeModal-{{status.id}}" tabindex="-1" aria-labelledby="updateEndTimeModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="updateEndTimeModalLabel">Set End Time</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="{% url 'status_update' task.id %}" method="post">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="update_end_time" value="True">
+                                                <input type="hidden" name="status.id" value="{{ status.id }}">
+                                                <!-- Date Picker -->
+                                                <input type="date" name="end_date" id="end_date" class="form-control">
+                                                <!-- Time Picker -->
+                                                <input type="time" name="end_time" id="end_time" class="form-control mt-1">
+
+                                                <div class="modal-footer">
+                                                    <button type="submit" class="btn btn-primary">Update</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<!-- Section 3 : Status Update Form -->
+<div class="container mt-5">
+    <div class="card shadow py-2">
+        <div class="card-header bg-white">
+            <h5>Status Update</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" action="{% url 'status_update' task.id %}">
+                {% csrf_token %}
+
+                <div class="row d-flex justify-content-between">
+                <div class="col-5">
+                <!-- State Field -->
+                <div class="mb-3">
+                    <label for="state" class="form-label">Status</label>
+                    {{ form.state }}
+                </div>
+                <!-- Start Time Field -->
+                <div class="mb-3">
+                    <label for="start_date">Start Date / Time</label>
+                    <input type="date" class="form-control" id="start_time_date" name="start_time_date">
+                    <input type="time" class="form-control mt-1" id="start_time_time" name="start_time_time">
+                </div>
+                </div>
+
+                <div class="col-5">
+                    <!-- Workers Checkbox -->
+                    <div class="mb-3">
+                        <label for="workers" class="form-label">Technicians</label>
+                        {{ form.workers }}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-4 w-100">Update Status</button>
+                </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+{% endblock content %}

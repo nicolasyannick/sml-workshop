@@ -1,0 +1,197 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<!-- Section 1 : Work Request Details -->
+
+<div class="container mt-5">
+    <div class="card shadow py-2">
+        <div class="card-header bg-white">
+            <h4>Work Request Details</h4>
+        </div>
+        <div class="card-body">
+            <form>
+                <div class="row mt-2">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="workRequestId" class="form-label">Work Request ID</label>
+                            <input class="form-control" type="text" id="workRequestId" value="{{ work_request.id }}" readonly>
+                        </div>
+                    </div>
+                    <div class="col-4"></div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label class="form-label" for="date">Date</label>
+                            <input class="form-control" type="text" id="date" value="{{ work_request.date }}" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col">
+                        <div class="form-group">
+                            <label class="form-label" for="unit">Unit</label>
+                            <input class="form-control" type="text" id="unit" value="{{ work_request.get_unit_display }}" readonly>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label class="form-label" for="department">Department</label>
+                            <input class="form-control" type="text" id="department" value="{{ work_request.get_department_display }}" readonly>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label class="form-label" for="requester">Requester</label>
+                            <input class="form-control" type="text" id="requester" value="{{ work_request.requester }}" readonly>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Section 2 Machining Tasks List -->
+
+<div class="container mt-5">
+    <div class="card shadow">
+        <div class="card-header" style="background-color: #D0E8F2;">
+            <h4>Machining Tasks</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive table mt-2" role="grid"></div>
+                <table class="table my-0">
+                    <!-- Headers -->
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Urgency</th>
+                            <th>Assessment Time</th>
+                            <th>Quantity</th>
+                            <th>Job Type</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <!-- Body -->
+                    <tbody>
+                        {% for task in machining_tasks %}
+                        <tr>
+                            <td>{{ task.description }}</td>
+                            <td>{{ task.get_urgency_display }}</td>
+                            <td>{{ task.assessment_time }}</td>
+                            <td>{{ task.quantity }}</td>
+                            <td>{{ task.get_task_type_display }}</td>
+                            <td>{{ task.get_current_status_display }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>    
+    </div>
+</div>
+
+<!-- Section 3: Non Machining Tasks -->
+
+<div class="container mt-5">
+    <div class="card shadow py-2">
+        <div class="card-header bg-white">
+            <h4>Non-Machining Task</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive table mt-2" role="grid">
+                <table class="table my-0">
+                    <!-- Headers -->
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Urgency</th>
+                            <th>Assessment Time</th>
+                            <th>Quantity</th>
+                            <th>Job Type</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <!-- Body -->
+                    <tbody>
+                        {% for task in non_machining_tasks %}
+                        <tr>
+                            <td>{{ task.description }}</td>
+                            <td>{{ task.get_urgency_display }}</td>
+                            <td>{{ task.assessment_time }}</td>
+                            <td>{{ task.quantity }}</td>
+                            <td>{{ task.get_task_type_display }}</td>
+                            <td>{{ task.get_current_status_display }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Section 4: New Task Form -->
+
+<div class="container mt-5">
+    <div class="card shadow py-2">
+        <div class="card-header bg-white">
+            <h4>Add New Task</h4>
+        </div>
+        <div class="card-body">
+            <form action="{% url 'request_page' work_request.id %}" method="post">
+                {% csrf_token %}
+
+                <div class="row d-flex justify-content-between mt-2">
+                    <div class="col-5 ">
+                        <!-- Description Field -->
+                        <label for="{{ new_task_form.description.id_for_label }}" class="form-label">Description</label>
+                        <textarea  class="form-control" name="{{ new_task_form.description.name }}" id="{{ new_task_form.description.id_for_label }}" rows="4"></textarea>
+                        <!-- Urgency Field -->
+                        <label for="{{ new_task_form.urgency.id_for_label }}" class="form-label mt-3">Urgency</label>
+                        <select class="form-select" name="{{ new_task_form.urgency.name }}" id="{{ new_task_form.urgency.id_for_label }}">
+                            {% for value, label in new_task_form.fields.urgency.choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        <!-- Quantity -->
+                        <label for="{{ new_task_form.quantity.id_for_label }}" class="form-label mt-3">Quantity</label>
+                        <input type="number" name="{{ new_task_form.quantity.name }}" id="{{ new_task_form.quantity.id_for_label }}" class="form-control">
+                    </div>
+                    <div class="col-5">
+                        <!--Assessment Hours Field-->
+                        <label for="{{ new_task_form.assessment_hours.id_for_label }}" class="form-label">Assessment Time (in Hours)</label>
+                        <input type="number" step="0.1" class="form-control" name="{{ new_task_form.assessment_hours.name }}" id="{{ new_task_form.assessment_hours.id_for_label }}">
+                        <!-- Task Type Field -->
+                        <label for="{{ new_task_form.task_type.id_for_label }}" class="form-label mt-3">Task Type</label>
+                        <select name="{{ new_task_form.task_type.name }}" id="{{ new_task_form.task_type.id_for_label }}" class="form-select">
+                            {% for value, label in new_task_form.fields.task_type.choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        <!-- Machining Field -->
+                        <div class="form-check mt-3">
+                            <input type="checkbox" class="form-check-input" id="{{ new_task_form.machining.id_for_label }}" name="{{ new_task_form.machining.name }}">
+                            <label class="form-check-label" for="{{ new_task_form.machining.id_for_label }}">Machining</label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary mt-4 w-100">Create Task</button>
+
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+
+
+
+ 
+{% endblock content %}
