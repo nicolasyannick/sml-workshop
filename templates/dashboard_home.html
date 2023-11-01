@@ -88,12 +88,78 @@
     <div class="d-flex py-3">
         <h3>Today's Planning</h3>
     </div>
-    <di class="container bg-white shadow">
 
+    <!-- Machining Task Planning-->
+    <div class="container bg-white shadow">
+        <h5 class="text-muted text-center mt-1">Machining Tasks</h5>
+        <table class="table-responsive table mt-2" role="grid">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Business Unit</th>
+                    <th>Urgency</th>
+                    <th>Assesment Hrs.</th>
+                    <th>Lead Time</th>
+                    <th>Technician</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in machining_for_today %}
+                <tr>
+                    <td>{{task.description}}</td>
+                    <td>{{task.work_request.get_unit_display}}</td>
+                    <td>{{task.get_urgency_display}}</td>
+                    <td>{{task.assessment_hours}}</td>
+                    <td>{{task.lead_time}}</td>
+                    <td>{{task.worker_allocated}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
+
+    <!-- Non Machining Task Planning -->
+    <div class="container bg-white shadow mt-5">
+        <h5 class="text-muted text-center mt-1">Non Machining Tasks</h5>
+        <table class="table-responsive table mt-2" role="grid">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Business Unit</th>
+                    <th>Urgency</th>
+                    <th>Assesment Hrs.</th>
+                    <th>Lead Time</th>
+                    <th>Technician</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in non_machining_for_today %}
+                <tr>
+                    <td>{{task.description}}</td>
+                    <td>{{task.work_request.get_unit_display}}</td>
+                    <td>{{task.get_urgency_display}}</td>
+                    <td>{{task.assessment_hours}}</td>
+                    <td>{{task.lead_time}}</td>
+                    <td>{{task.worker_allocated}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
 </div>
 
-    
+
+<!-- Section Completed Tasks -->
+
+<div class="container mt-5">
+    <div class="d-flex py-3">
+        <h3>Completed Tasks</h3>
+    </div>
+    <div class="container bg-white shadow">
+        <table></table>
+    </div>
+</div>
 
         
 

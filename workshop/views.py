@@ -393,6 +393,33 @@ def dashboard_home(request):
     plot4_html = pyo.plot(fig4, output_type='div')
 
 
+    # Section 3 
+    # Planning Table
+
+    machining_for_today = Task.objects.filter(machining = True , current_status__in=[2,5])
+    non_machining_for_today = Task.objects.filter(machining = False, current_status__in=[2,5])
+
+    for task in machining_for_today:
+        delta_time = datetime.now().date() - task.work_request.date
+        task.lead_time = f"{delta_time.days} days {delta_time.seconds//3600} hours"
+
+        latest_state = task.stateduration_set.order_by('-start_time').first()
+        if latest_state:
+            task.worker_allocated = ", ".join([str(worker) for worker in latest_state.workers.all()])
+
+
+
+    for task in non_machining_for_today:
+        delta_time = datetime.now().date() - task.work_request.date
+        task.lead_time = f"{delta_time.days} days {delta_time.seconds//3600} hours"
+
+        latest_state = task.stateduration_set.order_by('-start_time').first()
+        if latest_state:
+            task.worker_allocated = ", ".join([str(worker) for worker in latest_state.workers.all()])
+
+    
+
+
 
 
 
@@ -420,6 +447,8 @@ def dashboard_home(request):
         'plot2' : plot2_html,
         'plot3' : plot3_html,
         'plot4' : plot4_html,
+        'machining_for_today' : machining_for_today,
+        'non_machining_for_today' : non_machining_for_today,
     }
 
     return render(request, 'dashboard_home.html', context)
