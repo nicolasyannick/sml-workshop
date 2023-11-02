@@ -494,20 +494,12 @@ def dashboard_home(request):
         if latest_wip:
             task.worker_allocated = ", ".join([str(worker) for worker in latest_wip.workers.all()])
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        
+    # Calculation of Machining Workload Trend
+    
+    total_assessment_time = active_machining_tasks.aggregate(total=Sum('assessment_hours'))['total'] or 0
+    previous_machining_workload = CachedCalculation.objects.latest('id').machining_workload
+    machining_workload_comparison = total_assessment_time - previous_machining_workload
 
 
 
@@ -524,6 +516,7 @@ def dashboard_home(request):
         'non_machining_for_today' : non_machining_for_today,
         'completed_machining_tasks' : completed_machining_tasks,
         'completed_non_machining_tasks' : completed_non_machining_tasks,
+        'machining_workload_comparison' : machining_workload_comparison,
     }
 
     return render(request, 'dashboard_home.html', context)
