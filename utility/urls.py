@@ -19,7 +19,7 @@ from django.urls import path
 from workshop import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls, name='admin'),
+    path('admin/', admin.site.urls),
     path('',views.dashboard_home, name='home'),
     path('new_work_request/',views.new_work_request, name='new_work_request'),
     path('request_page/<int:work_request_id>', views.request_page, name='request_page'),
