@@ -5,140 +5,144 @@
 
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Workshop Management </title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="{% static  'css/main.css' %}">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> Workshop Management </title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+  <link rel="stylesheet" href="{% static  'css/main.css' %}">
 </head>
+
+
 
 <body style="background-color: #f7fafc;">
 
-    <nav class="navbar navbar-expand-md  navbar-light bg-body px-2 py-2 shadow">
-        <div class="container-fluid">
-          <h5 class="navbar-brand" href="">
-            <img src="{% static 'images/logo.svg' %}" alt="logo" width="30" height="24" class="d-inline-block align-text-top">
-            {% block menutitle %}SML Workshop {% endblock menutitle %} 
-          </h5 >
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-              <li class="nav-item px-3">
-                <a class="nav-link active" aria-current="page" href="#">Dashboard</a>
-              </li>
-              <li class="nav-item dropdown px-3">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Work Requests
-                </a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#"  data-bs-toggle="modal" data-bs-target="#newRequestModal">New Request</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="#">View All</a></li>
-                </ul>
-              </li>
-              <li class="nav-item dropdown px-3">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Tasks
-                </a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">New Task</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="#">Machining</a></li>
-                  <li><a class="dropdown-item" href="#">Non-Machining</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="#">Planning</a></li>
-                  <li><a class="dropdown-item" href="#">View All</a></li>
-                </ul>
-              </li>
-                    <li class="nav-item px-3">
-                <a class="nav-link" href="{% url 'status_update_page' %}">Status Update</a>
-              </li>
-              <li class="nav-item px-3">
-                <a class="nav-link" href="#">Material Purchase</a>
-              </li>            
-              <li class="nav-item dropdown px-3">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Reports
-                </a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Generate Report</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="#">View All</a></li>
-                </ul>
-              </li>
-              <form class="px-3" action="{% url 'calculate_workload' %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-primary">Calculate</button>
-              </form>
+  <nav class="navbar navbar-expand-md  navbar-light bg-body px-2 py-2 shadow">
+    <div class="container-fluid">
+      <h5 class="navbar-brand" href="">
+        <img src="{% static 'images/logo.svg' %}" alt="logo" width="30" height="24" class="d-inline-block align-text-top">
+        {% block menutitle %}SML Workshop {% endblock menutitle %} 
+      </h5 >
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav justify-content-between">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Dashboard</a>
+          </li>
+          {% if user.is_authenticated and user.is_staff %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Work Requests
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#"  data-bs-toggle="modal" data-bs-target="#newRequestModal">New Request</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#">View All</a></li>
             </ul>
-          </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'status_update_page' %}">Status Update</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Material Purchase</a>
+          </li>            
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Reports
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Generate Report</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#">View All</a></li>
+            </ul>
+          </li>
+          {% endif %}
+        </ul>
+
+        <ul class="navbar-nav ms-auto px-1">
+          {% if user.is_authenticated and user.is_staff %}
+          <li class="mx-2">
+            <form class="d-flex" action="{% url 'calculate_workload' %}" method="post">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-primary">Calculate</button>
+            </form>
+          </li>
+          {% endif %}
+          <li class="mx-1">
+            <a href="{% url 'admin:index' %}">
+              <img src="{% static 'images/user-gear.svg' %}" height="35" width="30" alt="admin">
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- New Request Modal-->
+
+  <div class="modal fade" id="newRequestModal" tabindex="-1" aria-labelledby="newRequestModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="newRequestModalLabel">New Work Request</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div></div>
-      </nav>
-
-
-      <!-- New Request Modal-->
-
-      <div class="modal fade" id="newRequestModal" tabindex="-1" aria-labelledby="newRequestModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="newRequestModalLabel">New Work Request</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-body">
+          <form id="newRequestForm" action="{% url 'new_work_request' %}" method="post">
+            {% csrf_token %}
+            <!-- Business Unit -->
+            <div class="mb-3">
+              <label for="unit" class="form-label">Unit</label>
+              <select name="unit" id="unit" class="form-select">
+                {% for value, display_name in UNIT_CHOICES %}
+                <option value="{{ value }}">{{ display_name }}</option>
+                {% endfor %}
+              </select>
             </div>
-            <div class="modal-body">
-              <form id="newRequestForm" action="{% url 'new_work_request' %}" method="post">
-                {% csrf_token %}
-                <!-- Business Unit -->
-                <div class="mb-3">
-                  <label for="unit" class="form-label">Unit</label>
-                  <select name="unit" id="unit" class="form-select">
-                    {% for value, display_name in UNIT_CHOICES %}
-                    <option value="{{ value }}">{{ display_name }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <!-- Department -->
-                <div class="mb-3">
-                  <label for="department" class="form-label">Department</label>
-                  <select name="department" id="department" class="form-select">
-                    {% for value, display_name in DEPT_CHOICES %}
-                    <option value="{{ value }}">{{ display_name }}</option>
-                    {% endfor %}
-                  </select>
-                </div>
-                <!-- Requester -->
-                <div class="mb-3">
-                  <label for="requester" class="form-label">Requester</label>
-                  <input type="text" class="form-control" id="requester" name="requester">
-                </div>
-                <!-- Date -->
-                <div class="mb-3">
-                  <label for="date" class="form-label">Date</label>
-                  <input type="date" class="form-control" id="date" name="date">
-                </div>
-              </form>            
+            <!-- Department -->
+            <div class="mb-3">
+              <label for="department" class="form-label">Department</label>
+              <select name="department" id="department" class="form-select">
+                {% for value, display_name in DEPT_CHOICES %}
+                <option value="{{ value }}">{{ display_name }}</option>
+                {% endfor %}
+              </select>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              <button type="submit" form="newRequestForm" class="btn btn-primary">Save</button>
+            <!-- Requester -->
+            <div class="mb-3">
+              <label for="requester" class="form-label">Requester</label>
+              <input type="text" class="form-control" id="requester" name="requester">
             </div>
-          </div>
+            <!-- Date -->
+            <div class="mb-3">
+              <label for="date" class="form-label">Date</label>
+              <input type="date" class="form-control" id="date" name="date">
+            </div>
+          </form>            
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" form="newRequestForm" class="btn btn-primary">Save</button>
         </div>
       </div>
+    </div>
+  </div>
 
 
 
-    {% block content %}
-    {% endblock content %}
+  {% block content %}
+  {% endblock content %}
 
+  <footer class="px-5 pt-1 mt-5 mb-2">
+    <hr>
+    <p class="text-center text-muted text-body-secondary" style="font-size: x-small;">OUbs035225 Work Placement Project, Yannick Sandra, 2023</p>
+  </footer>
     
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 
 </body>
 </html>
