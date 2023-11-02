@@ -2,9 +2,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import WorkRequest, Task, StateDuration, CachedCalculation
 from .forms import TaskForm, TaskFilterForm, StatusUpdateForm
 from .utils import calculate_duration_for_local, calculate_duration_for_expat
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, time
 from django.contrib import messages
 from django.utils import timezone
+from django.utils.timezone import make_aware
+from django.db.models import Sum
 import pandas as pd
 import plotly.express as px
 import plotly.offline as pyo
@@ -261,13 +263,15 @@ def dashboard_home(request):
     fig1 = px.density_heatmap(grouped_df1, x='Work Type', y='Current Status', z='Lead Time', color_continuous_scale='OrRd')
     fig1.update_layout(
         title={
-            'text': 'Lead Time (days) by Current Status',
+            'text': 'Avg. Lead Time (days) by Current Status',
             'x':0.5,
             'xanchor': 'center'
         },
         coloraxis_colorbar_title='Avg. Lead Time',
-        
         )
+    fig1.update_traces(
+        hovertemplate="Lead Time: %{z:.1f} days"
+    )
 
     #Convert to HTML
     plot1_html = pyo.plot(fig1, output_type='div')
@@ -297,7 +301,7 @@ def dashboard_home(request):
     grouped_df2 = df2.groupby(['Status','Urgency']).agg({'Assessment Time': 'sum'}).reset_index()
 
     #Create Plotly Stacked Bar Chart
-    fig2 = px.bar(grouped_df2, x='Status', y='Assessment Time', color='Urgency', color_discrete_sequence= px.colors.sequential.Sunsetdark)
+    fig2 = px.bar(grouped_df2, x='Status', y='Assessment Time', color='Urgency', color_discrete_sequence= px.colors.sequential.RdBu, text_auto=True)
 
     fig2.update_layout(
         title={
@@ -305,6 +309,10 @@ def dashboard_home(request):
             'x': 0.5,
             'xanchor': 'center',                                                                                                            
         })
+    
+    fig2.update_traces(
+        hovertemplate="%{y}",
+    )
 
     #convert to HTML
     plot2_html = pyo.plot(fig2, output_type='div')
@@ -345,7 +353,9 @@ def dashboard_home(request):
         text='Workload (Hrs) by Unit and Urgency',
         x=0.5,
         xanchor='center'))
-    fig3.update_traces(textinfo='label+value')
+    fig3.update_traces(textinfo='label+value',
+                       hovertemplate = None,
+                       hoverinfo = "skip")
 
     #Converting to HTML
     plot3_html = pyo.plot(fig3, output_type='div')
@@ -387,7 +397,9 @@ def dashboard_home(request):
     x=0.5,
     xanchor='center'))
     
-    fig4.update_traces(textinfo='label+value')
+    fig4.update_traces(textinfo='label+value',
+                       hovertemplate = None,
+                       hoverinfo = "skip")
 
     #Converting to HTML
     plot4_html = pyo.plot(fig4, output_type='div')
@@ -419,7 +431,68 @@ def dashboard_home(request):
 
     
 
+    # Section 4 
+    #Completed Tasks
 
+    today = timezone.now().date()
+
+    #Check if today is monday to include saturday and sunday
+    if today.weekday()==0:
+        saturday = today - timedelta(days=2)
+        sunday = today - timedelta(days=1)
+        completed_tasks =  Task.objects.filter(stateduration__state=6, stateduration__start_time__date__range=[saturday,sunday]).distinct().order_by('-stateduration__start_time')
+
+    else:
+        yesterday = today - timedelta(days=1)
+        completed_tasks = Task.objects.filter(stateduration__state=6, stateduration__start_time__date= yesterday).distinct().order_by('-stateduration__start_time')
+
+
+    # Calculations for Completed Machining Tasks
+    completed_machining_tasks = completed_tasks.filter(machining=True)
+    for task in completed_machining_tasks:
+
+        # Calculation of Cumm Normal Hrs and Overtime Hrs
+        durations_in_progress = StateDuration.objects.filter(task=task, state=5)
+        normal_hrs_sum = durations_in_progress.aggregate(total=Sum('normal_duration'))['total'] or timedelta()
+        task.normal_hrs_sum = normal_hrs_sum
+        overtime_hrs_sum = durations_in_progress.aggregate(total=Sum('overtime_duration'))['total'] or timedelta()
+        task.overtime_hrs_sum = overtime_hrs_sum
+
+        # Calculation of lead time 
+        completion_state = task.stateduration_set.filter(state=6).order_by('-start_time').first()
+        if completion_state:
+            work_request_datetime = make_aware(datetime.combine(task.work_request.date, time.min))
+            delta_time = completion_state.start_time - work_request_datetime
+            task.lead_time = f"{delta_time.days} days {delta_time.seconds//3600} hrs"
+
+        # Calculations regarding latest allocated Technician
+        latest_wip = task.stateduration_set.filter(state=5).order_by('-end_time').first()
+        if latest_wip:
+            task.worker_allocated = ", ".join([str(worker) for worker in latest_wip.workers.all()])
+        
+
+    # Calculations for Completed non machining tasks
+    completed_non_machining_tasks = completed_tasks.filter(machining=False)
+    for task in completed_non_machining_tasks:
+
+        #Calculation of Cumm Normal Hrs and Overtime Hrs
+        durations_in_progress = StateDuration.objects.filter(task=task, state=5)
+        normal_hrs_sum = durations_in_progress.aggregate(total=Sum('normal_duration'))['total'] or timedelta()
+        task.normal_hrs_sum = normal_hrs_sum
+        overtime_hrs_sum = durations_in_progress.aggregate(total=Sum('overtime_duration'))['total'] or timedelta()
+        task.overtime_hrs_sum = overtime_hrs_sum
+
+        # Calculation of lead time 
+        completion_state = task.stateduration_set.filter(state=6).order_by('-start_time').first()
+        if completion_state:
+            work_request_datetime = make_aware(datetime.combine(task.work_request.date, time.min))
+            delta_time = completion_state.start_time - work_request_datetime
+            task.lead_time = f"{delta_time.days} days {delta_time.seconds//3600} hrs"
+
+        # Calculations regarding latest allocated Technician
+        latest_wip = task.stateduration_set.filter(state=5).order_by('-end_time').first()
+        if latest_wip:
+            task.worker_allocated = ", ".join([str(worker) for worker in latest_wip.workers.all()])
 
 
 
@@ -449,6 +522,8 @@ def dashboard_home(request):
         'plot4' : plot4_html,
         'machining_for_today' : machining_for_today,
         'non_machining_for_today' : non_machining_for_today,
+        'completed_machining_tasks' : completed_machining_tasks,
+        'completed_non_machining_tasks' : completed_non_machining_tasks,
     }
 
     return render(request, 'dashboard_home.html', context)

@@ -66,16 +66,16 @@
     <div class="container shadow bg-white">
         <div class="row">
             <!-- Lead Time Heatmap -->
-            <div class="col-sm-12 col-md-6 text-muted text-center mb-5 h-100">
+            <div class="col-sm-12 col-md-6 text-muted text-center mb-3 h-100">
                 {{plot4|safe}}
             </div>
-            <div class="col-sm-12 col-md-6 text-muted text-center mb-5 h-100">
+            <div class="col-sm-12 col-md-6 text-muted text-center mb-3 h-100">
                 {{plot1|safe}}
             </div>
-            <div class="col-sm-12 col-md-6 text-muted text-center mt-2 h-100">
+            <div class="col-sm-12 col-md-6 text-muted text-center mt-3 h-100">
                 {{plot2|safe}}
             </div>
-            <div class="col-sm-12 col-md-6 text-muted text-center mt-2 h-100">
+            <div class="col-sm-12 col-md-6 text-muted text-center mt-3 h-100">
                 {{plot3|safe}}
             </div>
         </div>
@@ -156,14 +156,73 @@
     <div class="d-flex py-3">
         <h3>Completed Tasks</h3>
     </div>
+
+    <!-- Machining Table -->
     <div class="container bg-white shadow">
-        <table></table>
+        <h5 class="text-muted text-center mt-1">Machining</h5>
+        <table class="table-responsive table mt-2" role="grid">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Business Unit</th>
+                    <th>Urgency</th>
+                    <th>Lead Time</th>
+                    <th>Target Hrs</th>
+                    <th>Normal Hrs</th>
+                    <th>Overtime Hrs</th>
+                    <th>Technician</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    {% for task in completed_machining_tasks %}
+                    <td>{{task.description}}</td>
+                    <td>{{task.work_request.get_unit_display}}</td>
+                    <td>{{task.get_urgency_display}}</td>
+                    <td>{{task.lead_time}}</td>
+                    <td>{{task.assessment_hours}}</td>
+                    <td>{{task.normal_hrs_sum}}</td>
+                    <td>{{task.overtime_hrs_sum}}</td>
+                    <td>{{task.worker_allocated}}</td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Non Machining Table -->
+    <div class="container bg-white shadow mt-5">
+        <h5 class="text-muted text-center mt-1">Non Machining</h5>
+        <table class="table-responsive table mt-2" role="gridcell">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Business Unit</th>
+                    <th>Urgency</th>
+                    <th>Lead Time</th>
+                    <th>Target Hrs</th>
+                    <th>Normal Hrs</th>
+                    <th>Overtime Hrs</th>
+                    <th>Technician</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    {% for task in completed_non_machining_tasks %}
+                    <td>{{task.description}}</td>
+                    <td>{{task.work_request.get_unit_display}}</td>
+                    <td>{{task.get_urgency_display}}</td>
+                    <td>{{task.lead_time}}</td>
+                    <td>{{task.assessment_hours}}</td>
+                    <td>{{task.normal_hrs_sum}}</td>
+                    <td>{{task.overtime_hrs_sum}}</td>
+                    <td>{{task.worker_allocated}}</td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
-
-        
-
-
 
 
 
