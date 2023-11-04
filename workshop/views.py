@@ -521,6 +521,9 @@ def dashboard_home(request):
 
     return render(request, 'dashboard_home.html', context)
 
+def basic_home(request):
+    return render(request, 'basic_home.html')
+
 
 
 
