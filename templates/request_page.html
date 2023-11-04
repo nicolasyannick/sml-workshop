@@ -76,7 +76,7 @@
                     <tbody>
                         {% for task in machining_tasks %}
                         <tr>
-                            <td>{{ task.description }}</td>
+                            <td class="description-cell">{{ task.description }}</td>
                             <td>{{ task.get_urgency_display }}</td>
                             <td>{{ task.assessment_time }}</td>
                             <td>{{ task.quantity }}</td>
@@ -116,7 +116,7 @@
                     <tbody>
                         {% for task in non_machining_tasks %}
                         <tr>
-                            <td>{{ task.description }}</td>
+                            <td class="description-cell">{{ task.description }}</td>
                             <td>{{ task.get_urgency_display }}</td>
                             <td>{{ task.assessment_time }}</td>
                             <td>{{ task.quantity }}</td>

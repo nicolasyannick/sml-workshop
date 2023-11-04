@@ -125,7 +125,7 @@
             <tbody>
                 {% for task in machining_for_today %}
                 <tr>
-                    <td>{{task.description}}</td>
+                    <td class="description-cell">{{task.description}}</td>
                     <td>{{task.work_request.get_unit_display}}</td>
                     <td>{{task.get_urgency_display}}</td>
                     <td>{{task.assessment_hours}}</td>
@@ -154,7 +154,7 @@
             <tbody>
                 {% for task in non_machining_for_today %}
                 <tr>
-                    <td>{{task.description}}</td>
+                    <td class="description-cell">{{task.description}}</td>
                     <td>{{task.work_request.get_unit_display}}</td>
                     <td>{{task.get_urgency_display}}</td>
                     <td>{{task.assessment_hours}}</td>
@@ -195,7 +195,7 @@
             <tbody>
                 <tr>
                     {% for task in completed_machining_tasks %}
-                    <td>{{task.description}}</td>
+                    <td class="description-cell">{{task.description}}</td>
                     <td>{{task.work_request.get_unit_display}}</td>
                     <td>{{task.get_urgency_display}}</td>
                     <td>{{task.lead_time}}</td>
@@ -228,7 +228,7 @@
             <tbody>
                 <tr>
                     {% for task in completed_non_machining_tasks %}
-                    <td>{{task.description}}</td>
+                    <td class="description-cell">{{task.description}}</td>
                     <td>{{task.work_request.get_unit_display}}</td>
                     <td>{{task.get_urgency_display}}</td>
                     <td>{{task.lead_time}}</td>
